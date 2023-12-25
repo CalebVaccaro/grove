@@ -1,5 +1,7 @@
+using Geocoding;
 using grove.DTOModels;
 using grove.Repository;
+using grove.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,17 +23,37 @@ public static class EventEndpoints
         events.MapGet("/user/{id}",GetUserEventList);
     }
     
-    static async Task<IResult> CreateEvent([FromBody]EventDTO eventDto, [FromServices]EventDb db)
+    static async Task<IResult> CreateEvent([FromBody]EventDTO eventDto, [FromServices]EventDb db, [FromServices]IGeocodingService geocodingService)
     {
         var evnt = new Event();
         evnt.name = eventDto.name;
         evnt.description = eventDto.description;
-        evnt.X = eventDto.X;
-        evnt.Y = eventDto.Y;
+
+        if (eventDto.address == null || eventDto.address == "" || eventDto.address == "string")
+        {
+            return TypedResults.BadRequest("Address cannot be empty");
+        }
+
+        // Get Location Coordinates
+        Location location;
+        try
+        {
+            location = await geocodingService.GetCoordinates(eventDto.address);
+        }
+        catch (Exception e)
+        {
+            return TypedResults.BadRequest("Address cannot be parsed");
+        }
+
+        evnt.X = location.Latitude;
+        evnt.Y = location.Longitude;
+        evnt.address = eventDto.address;
         evnt.date = eventDto.date;
         evnt.id = Guid.NewGuid();
+        
         db.Add(evnt);
         await db.SaveChangesAsync();
+        
         var evntDTO = new EventDTO(evnt);
         return TypedResults.Ok(evntDTO);
     }
@@ -46,13 +68,19 @@ public static class EventEndpoints
         return Results.Ok(await db.FindAsync<Event>(id));
     }
 
-    static async Task<IResult> CreateUserEvent([FromBody]EventDTO eventDto, [FromServices]EventDb db, [FromQuery]Guid id, [FromServices]UserDb userDb)
+    static async Task<IResult> CreateUserEvent([FromBody]EventDTO eventDto, 
+        [FromServices]EventDb db, [FromQuery]Guid id, [FromServices]UserDb userDb,
+        [FromServices]IGeocodingService geocodingService)
     {
         var evnt = new Event();
         evnt.name = eventDto.name;
         evnt.description = eventDto.description;
-        evnt.X = eventDto.X;
-        evnt.Y = eventDto.Y;
+        
+        // Get Location Coordinates
+        var location = await geocodingService.GetCoordinates(eventDto.address);
+        evnt.X = location.Latitude;
+        evnt.Y = location.Longitude;
+        
         evnt.date = eventDto.date;
         evnt.id = Guid.NewGuid();
         db.Add(evnt);
@@ -88,19 +116,29 @@ public static class EventEndpoints
         }
 
         var events = await db.Events.ToListAsync();
-        var evnt = Haversine.GetNearestNeighbor(user, events);
+        var evnt = HaversineService.GetNearestNeighbor(user, events, 500);
         return TypedResults.Ok(evnt);
     }
 
-    static async Task<IResult> UpdateEvent([FromBody]EventDTO evntDto, [FromServices]EventDb db)
+    static async Task<IResult> UpdateEvent([FromQuery] Guid id, [FromBody]EventDTO eventDto, [FromServices]EventDb db, [FromServices]IGeocodingService geocodingService)
     {
-        var evnt = await db.Events.FindAsync(evntDto.id);
+        var evnt = await db.Events.FindAsync(id);
         if (evnt is null) return Results.NotFound();
         
-        evnt.name = evntDto.name;
-        evnt.description = evntDto.description;
-        evnt.X = evntDto.X;
-        evnt.Y = evntDto.Y;
+        evnt.name = eventDto.name;
+        
+        // Get Location Coordinates
+        if (eventDto.address != evnt.address)
+        {
+            evnt.address = eventDto.address;
+            var location = await geocodingService.GetCoordinates(eventDto.address);
+            evnt.X = location.Latitude;
+            evnt.Y = location.Longitude;
+        }
+        
+        evnt.description = eventDto.description;
+        evnt.date = eventDto.date;
+        evnt.Image = eventDto.image;
         
         await db.SaveChangesAsync();
         return Results.NoContent();

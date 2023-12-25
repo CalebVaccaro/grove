@@ -23,7 +23,7 @@ namespace grove.Migrations.EventDbMigrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Secret")
+                    b.Property<string>("Image")
                         .HasColumnType("TEXT");
 
                     b.Property<double>("X")
@@ -31,6 +31,10 @@ namespace grove.Migrations.EventDbMigrations
 
                     b.Property<double>("Y")
                         .HasColumnType("REAL");
+
+                    b.Property<string>("address")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("date")
                         .HasColumnType("TEXT");

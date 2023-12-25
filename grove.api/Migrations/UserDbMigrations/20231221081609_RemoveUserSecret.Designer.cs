@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using grove.Repository;
 
@@ -10,9 +11,11 @@ using grove.Repository;
 namespace grove.Migrations
 {
     [DbContext(typeof(UserDb))]
-    partial class UserDbModelSnapshot : ModelSnapshot
+    [Migration("20231221081609_RemoveUserSecret")]
+    partial class RemoveUserSecret
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");

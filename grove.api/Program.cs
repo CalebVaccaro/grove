@@ -1,5 +1,6 @@
 using grove.Endpoints;
 using grove.Repository;
+using grove.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<EventDb>(options => options.UseSqlite("Data Source=grove.db"));
 builder.Services.AddDbContext<UserDb>(options => options.UseSqlite("Data Source=grove.db"));
+
+// add geocoding service as a singleton
+builder.Services.AddSingleton<IGeocodingService, GeocodingService>();
 
 var app = builder.Build();
 
@@ -26,4 +30,7 @@ app.RegisterUserEndpoints();
 app.RegisterEventEndpoints();
 app.RegisterMatchEndpoints();
 
+
 app.Run();
+
+

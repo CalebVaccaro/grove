@@ -5,7 +5,7 @@ using grove;
 /// <summary>
 /// The distance type to return the results in.
 /// </summary>
-public static class Haversine
+public static class HaversineService
 {
     public enum DistanceType
     {
@@ -61,10 +61,9 @@ public static class Haversine
     /// <param name="user"></param>
     /// <param name="eventsToSearch"></param>
     /// <returns></returns>
-    public static (Event nearestLocation, double distance) GetNearestNeighbor(User user, List<Event> eventsToSearch, DistanceType type = DistanceType.Kilometers)
+    public static IEnumerable<Event> GetNearestNeighbor(User user, List<Event> eventsToSearch, double distance, DistanceType type = DistanceType.Kilometers)
     {
         var selectedPoint = user;
-        var distance = 0.0000f;
         
         // Precompute distances and positions
         double[] distances = new double[eventsToSearch.Count];
@@ -96,6 +95,6 @@ public static class Haversine
             if (!swapped) break;
         }
 
-        return (eventsToSearch[0], distances[0]);
+        return eventsToSearch.Where(e => user.lastPartition <= e.date && Distance(selectedPoint, e) <= distance);
     }
 }
