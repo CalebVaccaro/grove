@@ -2,6 +2,7 @@ namespace grove.DTOModels;
 
 public class EventDTO
 {
+    public Guid id { get; set; }
     public string? name { get; set; } = default;
     public string? description { get; set; } = default;
     public string address { get; set; } = default;
@@ -10,6 +11,7 @@ public class EventDTO
     public EventDTO() {}
     public EventDTO(Event evnt)
     {
+        this.id = evnt.id;
         this.name = evnt.name;
         this.description = evnt.description;
         this.date = evnt.date;

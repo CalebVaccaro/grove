@@ -63,7 +63,7 @@ public static class EventEndpoints
         return TypedResults.Ok(await db.Events.ToListAsync());
     }
 
-    static async Task<IResult> GetEvent([FromQuery]Guid id, [FromServices]EventDb db)
+    static async Task<IResult> GetEvent(Guid id, [FromServices]EventDb db)
     {
         return Results.Ok(await db.FindAsync<Event>(id));
     }
@@ -94,7 +94,7 @@ public static class EventEndpoints
         return TypedResults.Ok(evntDTO);
     }
 
-    static async Task<IResult> GetUserEventList([FromQuery]Guid id, [FromServices]UserDb udb, [FromServices]EventDb db)
+    static async Task<IResult> GetUserEventList(Guid id, [FromServices]UserDb udb, [FromServices]EventDb db)
     {
         var _user = await udb.FindAsync<User>(id);
         var events = _user.createdEventIds
@@ -107,7 +107,7 @@ public static class EventEndpoints
     // distance query
     // haversine from events
     // return events
-    static async Task<IResult> GetEventsInRadius([FromQuery]Guid id, [FromServices]EventDb db, [FromServices]UserDb userDb)
+    static async Task<IResult> GetEventsInRadius(Guid id, [FromQuery] double distance, [FromServices]EventDb db, [FromServices]UserDb userDb)
     {
         var user = await userDb.Users.FindAsync(id);
         if (user is null)
@@ -116,11 +116,11 @@ public static class EventEndpoints
         }
 
         var events = await db.Events.ToListAsync();
-        var evnt = HaversineService.GetNearestNeighbor(user, events, 500);
-        return TypedResults.Ok(evnt);
+        var eventsInDistance = HaversineService.GetNearestNeighbor(user, events, distance);
+        return TypedResults.Ok(eventsInDistance);
     }
 
-    static async Task<IResult> UpdateEvent([FromQuery] Guid id, [FromBody]EventDTO eventDto, [FromServices]EventDb db, [FromServices]IGeocodingService geocodingService)
+    static async Task<IResult> UpdateEvent(Guid id, [FromBody]EventDTO eventDto, [FromServices]EventDb db, [FromServices]IGeocodingService geocodingService)
     {
         var evnt = await db.Events.FindAsync(id);
         if (evnt is null) return Results.NotFound();
@@ -144,7 +144,7 @@ public static class EventEndpoints
         return Results.NoContent();
     }
 
-    static async Task<IResult> DeleteEvent([FromQuery]Guid id, [FromServices]EventDb db)
+    static async Task<IResult> DeleteEvent(Guid id, [FromServices]EventDb db)
     {
         var deleteEvent = await db.Events.FindAsync(id);
         if (deleteEvent is null) return Results.NotFound();

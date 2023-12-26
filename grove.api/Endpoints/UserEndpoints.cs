@@ -11,13 +11,12 @@ public static class UserEndpoints
     public static void RegisterUserEndpoints(this WebApplication app)
     {
         var users = app.MapGroup("/users")
-            .WithTags("users")
-            .RequireAuthorization();
+            .WithTags("users");
         users.MapPost("/", CreateUser);
         users.MapGet("/", GetUsers);
         users.MapGet("/{id}", GetUser);
-        users.MapPut("/", UpdateUser);
-        users.MapDelete("/", DeleteUser);
+        users.MapPut("/{id}", UpdateUser);
+        users.MapDelete("/{id}", DeleteUser);
     }
 
     static async Task<IResult> CreateUser([FromBody]UserDTO userDto, [FromServices]UserDb db, [FromServices] IGeocodingService geocodingService)
@@ -46,13 +45,13 @@ public static class UserEndpoints
         return TypedResults.Ok(await db.Users.ToListAsync());
     }
 
-    static async Task<IResult> GetUser([FromQuery]Guid id, [FromServices]UserDb db)
+    static async Task<IResult> GetUser(Guid id, [FromServices]UserDb db)
     {
         return TypedResults.Ok(await db.FindAsync<User>(id));
     }
 
     // Put
-    static async Task<IResult> UpdateUser([FromQuery] Guid id, [FromBody]UserDTO userDTO, [FromServices]UserDb db, [FromServices] IGeocodingService geocodingService)
+    static async Task<IResult> UpdateUser(Guid id, [FromBody]UserDTO userDTO, [FromServices]UserDb db, [FromServices] IGeocodingService geocodingService)
     {
         var user = await db.Users.FindAsync(id);
         if (user is null) return Results.NotFound();
@@ -73,7 +72,7 @@ public static class UserEndpoints
     }
 
     // Delete
-    static async Task<IResult> DeleteUser([FromBody]Guid id , [FromServices]UserDb db)
+    static async Task<IResult> DeleteUser(Guid id , [FromServices]UserDb db)
     {
         var deleteUser = await db.Users.FindAsync(id);
         if (deleteUser is null) return Results.NotFound();
