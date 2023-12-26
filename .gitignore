@@ -82,3 +82,8 @@ $RECYCLE.BIN/
 *.db-shm
 *.db-wal
 .DS_Store
+grove.api/appsettings.json
+grove.api/appsettings.Development.json
+appsettings.json
+appsettings.Development.json
+.env

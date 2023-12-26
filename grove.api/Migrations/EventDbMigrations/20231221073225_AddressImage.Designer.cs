@@ -2,25 +2,31 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using grove.Repository;
 
 #nullable disable
 
-namespace grove.Migrations
+namespace grove.Migrations.EventDbMigrations
 {
-    [DbContext(typeof(UserDb))]
-    partial class UserDbModelSnapshot : ModelSnapshot
+    [DbContext(typeof(EventDb))]
+    [Migration("20231221073225_AddressImage")]
+    partial class AddressImage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
 
-            modelBuilder.Entity("grove.User", b =>
+            modelBuilder.Entity("grove.Event", b =>
                 {
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Image")
                         .HasColumnType("TEXT");
 
                     b.Property<double>("X")
@@ -33,15 +39,10 @@ namespace grove.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("createdEventIds")
-                        .IsRequired()
+                    b.Property<DateTime>("date")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("lastPartition")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("matchedEventIds")
-                        .IsRequired()
+                    b.Property<string>("description")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("name")
@@ -49,7 +50,7 @@ namespace grove.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Events");
                 });
 #pragma warning restore 612, 618
         }

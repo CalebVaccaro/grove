@@ -5,7 +5,7 @@ using grove;
 /// <summary>
 /// The distance type to return the results in.
 /// </summary>
-public static class Haversine
+public static class HaversineService
 {
     public enum DistanceType
     {
@@ -61,41 +61,40 @@ public static class Haversine
     /// <param name="user"></param>
     /// <param name="eventsToSearch"></param>
     /// <returns></returns>
-    public static (Event nearestLocation, double distance) GetNearestNeighbor(User user, List<Event> eventsToSearch, DistanceType type = DistanceType.Kilometers)
+    public static IEnumerable<Event> GetNearestNeighbor(User user, List<Event> eventsToSearch, double distance, DistanceType type = DistanceType.Kilometers)
     {
-        var selectedPoint = user;
-        var distance = 0.0000f;
-        
-        // Precompute distances and positions
-        double[] distances = new double[eventsToSearch.Count];
-        for (int i = 0; i < eventsToSearch.Count; i++)
-        {
-            var eventLocation = eventsToSearch[i];
-            distances[i] = Distance(selectedPoint, eventLocation);
-        }
+        // var selectedPoint = user;
+        //
+        // // Precompute distances and positions
+        // double[] distances = new double[eventsToSearch.Count];
+        // for (int i = 0; i < eventsToSearch.Count; i++)
+        // {
+        //     var eventLocation = eventsToSearch[i];
+        //     distances[i] = Distance(selectedPoint, eventLocation);
+        // }
+        //
+        // // Bubble Sort with early termination
+        // bool swapped;
+        // for (int i = 0; i < eventsToSearch.Count; i++)
+        // {
+        //     swapped = false;
+        //     for (int j = 0; j < eventsToSearch.Count - 1 - i; j++)
+        //     {
+        //         if (distances[j] > distances[j + 1])
+        //         {
+        //             // Swap distances
+        //             (distances[j], distances[j + 1]) = (distances[j + 1], distances[j]);
+        //
+        //             // Swap objects in list
+        //             (eventsToSearch[j], eventsToSearch[j + 1]) = (eventsToSearch[j + 1], eventsToSearch[j]);
+        //
+        //             swapped = true;
+        //         }
+        //     }
+        //     // If no two elements were swapped by inner loop, break
+        //     if (!swapped) break;
+        // }
 
-        // Bubble Sort with early termination
-        bool swapped;
-        for (int i = 0; i < eventsToSearch.Count; i++)
-        {
-            swapped = false;
-            for (int j = 0; j < eventsToSearch.Count - 1 - i; j++)
-            {
-                if (distances[j] > distances[j + 1])
-                {
-                    // Swap distances
-                    (distances[j], distances[j + 1]) = (distances[j + 1], distances[j]);
-
-                    // Swap objects in list
-                    (eventsToSearch[j], eventsToSearch[j + 1]) = (eventsToSearch[j + 1], eventsToSearch[j]);
-
-                    swapped = true;
-                }
-            }
-            // If no two elements were swapped by inner loop, break
-            if (!swapped) break;
-        }
-
-        return (eventsToSearch[0], distances[0]);
+        return eventsToSearch.Where(e => user.lastPartition <= e.date && Distance(user, e) <= distance);
     }
 }

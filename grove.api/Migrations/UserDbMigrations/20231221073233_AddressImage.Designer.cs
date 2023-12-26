@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using grove.Repository;
 
@@ -10,9 +11,11 @@ using grove.Repository;
 namespace grove.Migrations
 {
     [DbContext(typeof(UserDb))]
-    partial class UserDbModelSnapshot : ModelSnapshot
+    [Migration("20231221073233_AddressImage")]
+    partial class AddressImage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
@@ -23,15 +26,14 @@ namespace grove.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Secret")
+                        .HasColumnType("TEXT");
+
                     b.Property<double>("X")
                         .HasColumnType("REAL");
 
                     b.Property<double>("Y")
                         .HasColumnType("REAL");
-
-                    b.Property<string>("address")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
 
                     b.Property<string>("createdEventIds")
                         .IsRequired()
