@@ -10,8 +10,8 @@ public static class MatchEndpoints
     {
         var matches = app.MapGroup("/matches")
             .WithTags("matches");
-        matches.MapPost("/{id}",CreateMatch);
-        matches.MapGet("/{id}",GetMatches);
+        matches.MapPost("/{userId}",CreateMatch);
+        matches.MapGet("/{userId}",GetMatches);
         matches.MapDelete("/{userId}/{eventId}",DeleteMatch);
         matches.MapGet("/{userId}/{eventId}", GetMatch);
     }
