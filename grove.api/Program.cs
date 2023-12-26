@@ -14,6 +14,7 @@ builder.Services.AddDbContext<UserDb>(options => options.UseSqlite("Data Source=
 
 // add geocoding service as a singleton
 builder.Services.AddSingleton<IGeocodingService, GeocodingService>();
+builder.Services.AddSingleton<IBlobStorageService, MockBlobStorageService>();
 
 var app = builder.Build();
 
@@ -29,7 +30,6 @@ app.UseHttpsRedirection();
 app.RegisterUserEndpoints();
 app.RegisterEventEndpoints();
 app.RegisterMatchEndpoints();
-
 
 app.Run();
 
