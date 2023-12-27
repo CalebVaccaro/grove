@@ -1,6 +1,0 @@
-@grove_HostAddress = http://localhost:5103
-
-GET {{grove_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
