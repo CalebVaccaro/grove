@@ -9,20 +9,21 @@ namespace Grove.UI.Services
     public class EventController : MonoBehaviour
     {
         public Action<List<EventDTO>> OnGetEvents;
+        public readonly string ApiUrl = "http://localhost:5103";
 
         public async Task<UserDTO> CreateUser(UserDTO user)
         {
-            return await ApiService.Post<UserDTO>("http://localhost:5103/users", user);
+            return await ApiService.Post<UserDTO>($@"{ApiUrl}/users", user);
         }
 
         public async Task<List<EventDTO>> GetEvents()
         {
-            return await ApiService.Get<List<EventDTO>>("http://localhost:5103/events");
+            return await ApiService.Get<List<EventDTO>>($@"{ApiUrl}/events");
         }
         
         public async Task<IAsyncResult> CreateMatch(Guid userId, Guid eventId)
         {
-            return await ApiService.Get<IAsyncResult>($"http://localhost:5103/matches/{userId}/{eventId}");
+            return await ApiService.Get<IAsyncResult>(@"{ApiUrl}/matches/{userId}/{eventId}");
         }
         
         public async void Start()
