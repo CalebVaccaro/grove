@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Configuration;
 using EAFU;
 using UnityEngine;
 
@@ -9,13 +10,13 @@ namespace Grove.UI.Services
     public class EventController : MonoBehaviour
     {
         public Action<List<EventDTO>> OnGetEvents;
+        [SerializeField] private AppSettings _appSettings;
         private string GROVE_API_URL;
 
         public void Awake()
         {
-            Environment.SetEnvironmentVariable("GROVE_API_URL", "http://localhost:5103");
-            GROVE_API_URL = System.Environment.GetEnvironmentVariable("GROVE_API_URL");
-            Debug.Log(GROVE_API_URL);
+            _appSettings = new AppSettings();
+            GROVE_API_URL = _appSettings.DEV_GROVE_API_URL();
         }
         
         public async Task<UserDTO> CreateUser(UserDTO user)
