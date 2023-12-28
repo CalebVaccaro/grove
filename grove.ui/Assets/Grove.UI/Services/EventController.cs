@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Configuration;
 using EAFU;
 using UnityEngine;
 
@@ -9,21 +10,28 @@ namespace Grove.UI.Services
     public class EventController : MonoBehaviour
     {
         public Action<List<EventDTO>> OnGetEvents;
-        public readonly string ApiUrl = "http://localhost:5103";
+        [SerializeField] private AppSettings _appSettings;
+        private string GROVE_API_URL;
 
+        public void Awake()
+        {
+            _appSettings = new AppSettings();
+            GROVE_API_URL = _appSettings.DEV_GROVE_API_URL();
+        }
+        
         public async Task<UserDTO> CreateUser(UserDTO user)
         {
-            return await ApiService.Post<UserDTO>($@"{ApiUrl}/users", user);
+            return await ApiService.Post<UserDTO>($@"{GROVE_API_URL}/users", user);
         }
 
         public async Task<List<EventDTO>> GetEvents()
         {
-            return await ApiService.Get<List<EventDTO>>($@"{ApiUrl}/events");
+            return await ApiService.Get<List<EventDTO>>($@"{GROVE_API_URL}/events");
         }
         
         public async Task<IAsyncResult> CreateMatch(Guid userId, Guid eventId)
         {
-            return await ApiService.Get<IAsyncResult>(@"{ApiUrl}/matches/{userId}/{eventId}");
+            return await ApiService.Get<IAsyncResult>($@"{GROVE_API_URL}/matches/{userId}/{eventId}");
         }
         
         public async void Start()
@@ -36,11 +44,11 @@ namespace Grove.UI.Services
                 name = "Test User"
             };
             
-            await CreateUser(user);
+            //await CreateUser(user);
             var events = await GetEvents();
             OnGetEvents?.Invoke(events);
             
-            var match = await CreateMatch(user.id, events[0].id);
+            //var match = await CreateMatch(user.id, events[0].id);
         }
     }
 }
